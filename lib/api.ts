@@ -7,16 +7,16 @@ axios.defaults.baseURL = "https://next-docs-api.onrender.com";
 
 export interface FetchNotesResponse {
     notes: Note[];
-    total: number;
+    totalPages: number;
 }
 
 export interface NewNote {
     title: string;
     content: string;
-    categoryId: NoteTag;
+    tag: NoteTag;
 }
 
-export const fetchNotes = async (page: number, search: string) => {
+export const fetchNotes = async (page: number, search: string): Promise<FetchNotesResponse> => {
     const myKey = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
     const params: Record<string, string | number> = { page };
@@ -33,12 +33,12 @@ export const fetchNotes = async (page: number, search: string) => {
 
     return res.data;
     } catch (error) {
-        alert("Failed to fetch notes:");
+
         throw error
     }
 }
 
-export const createNote = async (newNote: NewNote) => {
+export const createNote = async (newNote: NewNote): Promise<Note> => {
     const myKey = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
     try {
@@ -48,13 +48,13 @@ export const createNote = async (newNote: NewNote) => {
 
     return res.data;
     } catch (error) {
-        alert("Failed to post note");
+
         throw error;
     }
 }
 
 
-export const deleteNote = async (noteId: string) => {
+export const deleteNote = async (noteId: string): Promise<Note> => {
     const myKey = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
     try {
@@ -64,12 +64,12 @@ export const deleteNote = async (noteId: string) => {
 
     return res.data;
     } catch (error) {
-        alert("Failed to delete note");
+
         throw error;
     }    
 }
 
-export const fetchNoteById = async (id: string) => {
+export const fetchNoteById = async (id: string): Promise<Note> => {
     const myKey = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
     try {
@@ -79,7 +79,7 @@ export const fetchNoteById = async (id: string) => {
 
     return res.data;
     } catch (error) {
-        alert("Failed to fetch note");
+    
         throw error;
     }
 }

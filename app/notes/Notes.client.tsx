@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes, FetchNotesResponse } from "@/lib/api";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
@@ -11,8 +11,15 @@ import Modal from "@/components/Modal/Modal";
 import NoteForm from "@/components/NoteForm/NoteForm";
 import css from "./page.module.css"
 
-export default function NotesClient() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
+interface NotesClientProps {
+  initialData: FetchNotesResponse;
+  initialPage: number;
+  initialQuery: string;
+}
+
+export default function NotesClient({initialData, initialPage, initialQuery}: NotesClientProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -30,16 +37,17 @@ export default function NotesClient() {
     updateSearchQuery(value);
   };
   
-  const {data, isLoading} = useQuery({
+  const {data, isLoading} = useQuery<FetchNotesResponse>({
     queryKey: ["notes", currentPage, searchQuery],
     queryFn: () => fetchNotes(currentPage, searchQuery),
     placeholderData: keepPreviousData,
+    initialData: currentPage === initialPage && searchQuery === initialQuery
+    ? initialData : undefined,
   })
 
-  const totalPages = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 0;
 
-
-
+  
   return (
     <div className={css.app}>
 	    <header className={css.toolbar}>
